@@ -1,0 +1,14 @@
+#labels Featured
+Do you just want a quick start instead?  Check the [http://code.google.com/p/graphy Main page].
+
+= Line Charts =
+
+<example>
+
+= Other Chart Types =
+
+= Extra params = 
+
+= Developer's Guide =
+
+If you want to modify Graphy internally, instead of just using it, start with the DeveloperGuide.

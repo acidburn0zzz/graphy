@@ -1,0 +1,6 @@
+#summary For people who want to change the internals of Graphy
+
+= Design Notes =
+== Two Layers ==
+== Formatters ==
+== Convenience Shortcuts ==

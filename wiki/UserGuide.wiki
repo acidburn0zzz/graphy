@@ -1,4 +1,6 @@
+#summary Explains how to use Graphy
 #labels Featured
+
 Do you just want a quick start instead?  Check the [http://code.google.com/p/graphy Main page].
 
 = Line Charts =

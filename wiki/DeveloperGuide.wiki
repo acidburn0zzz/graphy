@@ -1,5 +1,7 @@
 #summary For people who want to change the internals of Graphy
 
+_(This document is intended for developers working on the internals of Graphy.  If you just want to use Graphy to make charts, check out the UserGuide.)_
+
 = Design Notes =
 == Two Layers ==
 This library consists of two separate layers: the chart objects themselves, and then the backend modules that know how to display the chart objects. (Currently, there's only a single backend, for the Google Chart API, but one of the developers has a prototype for a matplotlib backend). Chart objects provide representations of charts which are (hopefully) easy to work with. They don't have any knowledge of how they will be displayed, so they are fairly generic. The backends hold all the logic for converting a chart object into something that can be displayed, like a Google Chart URL or a PNG image file. The idea is that the user could populate a chart object, then hand it to two different backends and get similar (not identical) results.

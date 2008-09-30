@@ -1,15 +1,145 @@
 #summary Explains how to use Graphy
 #labels Featured
 
-Do you just want a quick start instead?  Check the [http://code.google.com/p/graphy Main page].
+= Graphy =
+
+Graphy is a simple Python library for generating charts. It tries to get out of the way and let you just work with your data. At the moment, it produces charts using the Google Chart API. 
+
+= Quick Start =
+Here's a quick example, plotting average monthly rainfall for Sunnyvale, CA:
+{{{
+from graphy.backends import google_chart_api
+
+monthly_rainfall = [3.2, 3.2, 2.7, 0.9, 0.4, 0.1, 0.0, 0.0, 0.2, 0.9, 1.8, 2.3]
+months = 'Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split()
+
+chart = google_chart_api.LineChart(monthly_rainfall)
+chart.bottom.labels = months
+print chart.display.Img(400, 100)
+}}}
+
+That will print out an HTML img tag for this chart:
+
+http://chart.apis.google.com/chart?chxt=x&chs=400x100&cht=lc&chxl=0%3A%7CJan%7CFeb%7CMar%7CApr%7CMay%7CJun%7CJul%7CAug%7CSep%7COct%7CNov%7CDec&chd=s%3A66ySKFDDGSir&chls=1%2C1%2C0&chco=0000ff&wiki=foo.png
+
 
 = Line Charts =
 
-<example>
+Basic line charts are made by constructing a `LineChart` object and calling either its `display.Url()` or `display.Img()` methods.
 
-= Other Chart Types =
+== Data Series ==
 
-= Extra params = 
+Currently, `LineChart.__init__()` only accepts a single data series.  If you want to chart multiple series, you can call `LineChart.AddSeries` to add them.
+
+You can control the display of each series by providing `AddSeries` with:
+  * Color, encoded as a hex string (like `'00ff00'`).  If you don't provide colors, the `LineChart` object will pick colors for you.
+  * A `LinePattern` object.  You can make your own, but some simple ones, like `LinePattern.solid` and `LinePattern.dashed` are provided for convenience.
+  * Markers, passed as a list of tuples specifying a Marker object and the X-position to draw it at.
+
+TODO: Add marker example to wiki & examples directory
+
+{{{
+from graphy import line_chart
+
+temperature = [18, 24, 32, 42, 51, 61, 66, 65, 57, 46, 35, 24]
+heating_cost = [78, 75, 60, 30, 10, 7, 8, 6, 10, 25, 60, 75]
+
+chart = google_chart_api.LineChart()
+chart.AddSeries(heating_cost, color='006F00',                 
+                pattern=line_chart.LinePattern.thick_solid)
+chart.AddSeries(temperature, color='0000FF',
+                pattern=line_chart.LinePattern.dashed)
+print chart.display.Img(250, 100)
+}}}
+
+http://chart.apis.google.com/chart?chs=250x100&cht=lc&chd=s%3A64sVGEEDGRs4%2CMRXfltxwqiZR&chls=2%2C1%2C0%7C1%2C8%2C4&chco=006F00%2C0000FF&wiki=foo.png
+
+== Axes ==
+
+TODO: This section is out of date and doesn't explain multiple axes.  It also doesn't mention 'top'.
+
+`LineCharts` have 3 main axes: left, right, bottom.  You can add labels to any axis by specifying `axis.labels` (and perhaps `axis.label_positions` if you want to specific placement).  If you specify `label_positions` you probably also want to set `axis.min` and `axis.max`.  This will let you specify your labels in same units as your data.
+
+{{{
+# Average Monthly Temperatures
+sunnyvale = [49, 52, 55, 58, 62, 66, 68, 68, 66, 61, 54, 48, 49]
+chicago   = [25, 31, 39, 50, 60, 70, 75, 74, 66, 55, 42, 30, 25]
+chart = google_chart_api.LineChart()
+chart.AddSeries(sunnyvale, label='Sunnyvale')  # label is used by InlineLegend, below.
+chart.AddSeries(chicago, style=line_chart.LineStyle.dashed, label='Chicago')
+
+chart.bottom.min = 0
+chart.bottom.max = 12
+chart.bottom.labels = ['Jan', 'Apr', 'Jul', 'Sep']
+chart.bottom.label_positions = [0, 3, 6, 9]
+
+chart.left.min = 0
+chart.left.max = 80
+chart.left.labels = [10, 32, 50, 70]
+chart.left.label_positions = [10, 32, 50, 70]
+
+# InlineLegend adds some labels to the right side of the chart.  We could also do it by hand:
+#   chart.right.min = 0
+#   chart.right.max = 80
+#   chart.right.labels = ['Sunnyvale', 'Chicago']
+#   chart.right.label_positions = [sunnyvale[-1], chicago[-1]]
+# TODO: Talk about InlineLegend separately from introducing labels
+chart.AddFormatter(formatters.InlineLegend)
+
+print chart.display.Img(250, 100)
+}}}
+
+TODO: Explain how the auto-scaling and auto min/max on left & right stuff works.  Sometimes you don't need to specify min/max, but when?
+
+http://chart.apis.google.com/chart?chxt=y%2Cr%2Cx&chs=250x100&cht=lc&chxp=0%2C10%2C32%2C50%2C70%7C1%2C49%2C25%7C2%2C0%2C3%2C6%2C9&chxl=0%3A%7C10%7C32%7C50%7C70%7C1%3A%7CSunnyvale%7CChicago%7C2%3A%7CJan%7CApr%7CJul%7CSep&chxr=0%2C0%2C80%7C1%2C0%2C80%7C2%2C0%2C12&chd=s%3Aloqsvy00yvpll%2CTYemu154yqgXT&chls=1%2C1%2C0%7C1%2C8%2C4&chco=0000ff%2Cff0000&wiki=foo.png
+
+
+By default, your data will be scaled to fill the chart vertically.  This makes it easy to get a chart quickly, but it can be misleading.  For example, this looks like a dramatic drop in traffic:
+{{{
+traffic = [578, 579, 580, 550, 545, 552]
+chart = line_chart.LineChart(traffic)
+print chart.display.Img(100, 50)
+}}}
+
+http://chart.apis.google.com/chart?chs=100x50&cht=lc&chd=s%3A356LDO&chls=1%2C1%2C0&chco=0000ff&wiki=foo.png 
+
+If you specify a min/max on the left axis, your data will be scaled to that range instead.  By properly scaling the traffic data, you see that there is nothing to worry about:
+{{{
+chart.left.min = 0
+chart.left.max = 600
+print chart.display.Img(100, 50)
+}}}
+
+http://chart.apis.google.com/chart?chs=100x50&cht=lc&chd=s%3A777434&chls=1%2C1%2C0&chco=0000ff&wiki=foo.png 
+
+TODO: document sparklines & barcharts
+
+TODO: document formatters
+
+= Extra Params =
+
+You can specify individual Google Chart API parameters. This is meant as an escape-hatch in case you either want to use a parameter which `google_chart_api` doesn't support, or in case you want to override one of the parameters `google_chart_api` is generating for you.  To override parameters, add them to the `chart.display.extra_params` dict.  Any parameters you add to this will show up in the final URL.
+
+There a list of non-abbreviated parameter names for your convenience (in `google_chart_api.py`).  Keys in the extra_params dict can be either short Google Chart URL parameters (like `chf`), or the longer equivalent (like `fill`).
+
+For example, if you wanted to use chart type `'lfi'` to make a sparkline, you could do it like this:
+{{{
+prices = [78, 102, 175, 181, 160, 195, 138, 158, 179, 183, 222, 211, 215]
+chart = google_chart_api.LineChart(prices)
+chart.display.extra_params['chart_type'] = 'lfi'  # 'chart_type' is a convenience name for 'cht'
+print '<img style="display:inline;" src="%s">' % chart.Url(40, 12)
+}}}
+
+Which gives you a tiny graph http://chart.apis.google.com/chart?chd=s%3ADMoqiwaiqr624&chco=0000ff&chs=40x12&cht=lfi&chls=1%2C1%2C0&wiki=foo.png showing that this stock is doing well.
+
+
+(Of course, if you wanted a sparkline, what you would really do is use the `line_chart.Sparkline` class instead of `line_chart.LineChart`).
+
+= Deprecations =
+
+These APIs are deprecated and will be removed soon:
+  * `AddSeries` is deprecated in favor of chart-specific calls: `LineChart.AddLine`, `BarChart.AddBars`, `PieChart.AddSegments`.
+
 
 = Developer's Guide =
 

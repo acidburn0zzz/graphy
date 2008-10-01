@@ -57,9 +57,11 @@ http://chart.apis.google.com/chart?chs=250x100&cht=lc&chd=s%3A64sVGEEDGRs4%2CMRX
 
 == Axes ==
 
-TODO: This section is out of date and doesn't explain multiple axes.  It also doesn't mention 'top'.
+TODO: This section is out of date and doesn't explain multiple axes.
 
-`LineCharts` have 3 main axes: left, right, bottom.  You can add labels to any axis by specifying `axis.labels` (and perhaps `axis.label_positions` if you want to specific placement).  If you specify `label_positions` you probably also want to set `axis.min` and `axis.max`.  This will let you specify your labels in same units as your data.
+Most charts support axes on all four sides of the chart: `left`, `bottom`, `right`, and `top`. A typical `LineChart` has two visible axes: the `bottom` axis represents the independent variable ("x"), and the `left` axis represents the dependent variable ("y").
+
+To add labels to an axis, specify `axis.labels`. By default, the labels will be spread out evenly along the axis; specify `axis.label_positions` to place labels where you want them to go (you may want to set `axis.min` and `axis.max`, as well). This will let you specify your labels in same units as your data. 
 
 {{{
 from graphy.backends import google_chart_api

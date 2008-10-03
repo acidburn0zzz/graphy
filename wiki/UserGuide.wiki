@@ -99,8 +99,9 @@ TODO: Explain how the auto-scaling and auto min/max on left & right stuff works.
 
 http://chart.apis.google.com/chart?chxt=y%2Cr%2Cx&chs=250x100&cht=lc&chxp=0%2C10%2C32%2C50%2C70%7C1%2C49%2C25%7C2%2C0%2C3%2C6%2C9&chxl=0%3A%7C10%7C32%7C50%7C70%7C1%3A%7CSunnyvale%7CChicago%7C2%3A%7CJan%7CApr%7CJul%7CSep&chxr=0%2C0%2C80%7C1%2C0%2C80%7C2%2C0%2C12&chd=s%3Aloqsvy00yvpll%2CTYemu154yqgXT&chls=1%2C1%2C0%7C1%2C8%2C4&chco=0000ff%2Cff0000&wiki=foo.png
 
+== Scaling ==
 
-By default, your data will be scaled to fill the chart vertically.  This makes it easy to get a chart quickly, but it can be misleading.  For example, this looks like a dramatic drop in traffic:
+By default, your data will be scaled to fill the entire chart vertically.  This makes it easy to get a chart quickly, but it can be misleading.  For example, this looks like a dramatic drop in traffic:
 {{{
 traffic = [578, 579, 580, 550, 545, 552]
 chart = line_chart.LineChart(traffic)
@@ -109,7 +110,7 @@ print chart.display.Img(100, 50)
 
 http://chart.apis.google.com/chart?chs=100x50&cht=lc&chd=s%3A356LDO&chls=1%2C1%2C0&chco=0000ff&wiki=foo.png 
 
-If you specify a min/max on the left axis, your data will be scaled to that range instead.  By properly scaling the traffic data, you see that there is nothing to worry about:
+If you specify a min/max on the dependent axis (the `left` axis for line charts), your data will be scaled to that range instead.  By properly scaling the traffic data, you see that there is nothing to worry about:
 {{{
 chart.left.min = 0
 chart.left.max = 600

@@ -22,21 +22,18 @@ That will print out an HTML img tag for this chart:
 
 http://chart.apis.google.com/chart?chxt=x&chs=400x100&cht=lc&chxl=0%3A%7CJan%7CFeb%7CMar%7CApr%7CMay%7CJun%7CJul%7CAug%7CSep%7COct%7CNov%7CDec&chd=s%3A66ySKFDDGSir&chls=1%2C1%2C0&chco=0000ff&wiki=foo.png
 
-
 = Line Charts =
-
-Basic line charts are made by constructing a `LineChart` object and calling either its `display.Url()` or `display.Img()` methods.
+Line charts are made by constructing a `LineChart` object and calling either its `display.Url()` or `display.Img()` methods.
 
 == Data Series ==
+Currently, `LineChart.__init__()` only accepts a single data series.  If you want to chart multiple series, you can call `LineChart.AddLine` to add them.
 
-Currently, `LineChart.__init__()` only accepts a single data series.  If you want to chart multiple series, you can call `LineChart.AddSeries` to add them.
-
-You can control the display of each series by providing `AddSeries` with:
+You can control the display of each series by providing `AddLine` with:
+  * Label, a string which will be used to identify the series in the legend.
+  * Markers, passed as a list of tuples specifying a Marker object and the X-position to draw it at.  (See the section on markers for more info)
   * Color, encoded as a hex string (like `'00ff00'`).  If you don't provide colors, the `LineChart` object will pick colors for you.
-  * A `LinePattern` object.  You can make your own, but some simple ones, like `LinePattern.solid` and `LinePattern.dashed` are provided for convenience.
-  * Markers, passed as a list of tuples specifying a Marker object and the X-position to draw it at.
-
-TODO: Add marker example to wiki & examples directory
+  * A `LinePattern` object.  You can make your own, but some simple ones, like `LinePattern.SOLID` and `LinePattern.DASHED` are provided for convenience.
+  * Width of the line, in pixels.  `LinePattern.THIN` and `LinePattern.THICK` are provided for convenience.
 
 {{{
 from graphy.backends import google_chart_api
@@ -46,14 +43,24 @@ temperature = [18, 24, 32, 42, 51, 61, 66, 65, 57, 46, 35, 24]
 heating_cost = [78, 75, 60, 30, 10, 7, 8, 6, 10, 25, 60, 75]
 
 chart = google_chart_api.LineChart()
-chart.AddSeries(heating_cost, color='006F00',                 
-                pattern=line_chart.LinePattern.thick_solid)
-chart.AddSeries(temperature, color='0000FF',
-                pattern=line_chart.LinePattern.dashed)
+chart.AddLine(heating_cost, color='006F00',                 
+                pattern=line_chart.LineStyle.SOLID, width=line_chart.LineStyle.THICK)
+chart.AddLine(temperature, color='0000FF',
+                pattern=line_chart.LineStyle.DASHED)
 print chart.display.Img(250, 100)
 }}}
 
-http://chart.apis.google.com/chart?chs=250x100&cht=lc&chd=s%3A64sVGEEDGRs4%2CMRXfltxwqiZR&chls=2%2C1%2C0%7C1%2C8%2C4&chco=006F00%2C0000FF&wiki=foo.png
+http://chart.apis.google.com/chart?chd=s%3A64sVGEEDGRs4%2CMRXfltxwqiZR&chco=006F00%2C0000FF&chs=250x100&cht=lc&chls=2%2C1%2C0%7C1%2C8%2C4&wiki=foo.png
+
+TODO: Document markers
+
+TODO: Document auto formatters a little
+
+TODO: Document None in data
+
+TODO: Document legends (auto & inline)
+
+TODO: Document sparklines
 
 == Axes ==
 
@@ -95,9 +102,15 @@ chart.AddFormatter(formatters.InlineLegend)
 print chart.display.Img(250, 100)
 }}}
 
-TODO: Explain how the auto-scaling and auto min/max on left & right stuff works.  Sometimes you don't need to specify min/max, but when?
 
 http://chart.apis.google.com/chart?chxt=y%2Cr%2Cx&chs=250x100&cht=lc&chxp=0%2C10%2C32%2C50%2C70%7C1%2C49%2C25%7C2%2C0%2C3%2C6%2C9&chxl=0%3A%7C10%7C32%7C50%7C70%7C1%3A%7CSunnyvale%7CChicago%7C2%3A%7CJan%7CApr%7CJul%7CSep&chxr=0%2C0%2C80%7C1%2C0%2C80%7C2%2C0%2C12&chd=s%3Aloqsvy00yvpll%2CTYemu154yqgXT&chls=1%2C1%2C0%7C1%2C8%2C4&chco=0000ff%2Cff0000&wiki=foo.png
+
+TODO: Explain how the auto-scaling and auto min/max on left & right stuff works.  Sometimes you don't need to specify min/max, but when?
+
+TODO: Document label separator.
+
+TODO: Document grids
+
 
 == Scaling ==
 
@@ -119,9 +132,11 @@ print chart.display.Img(100, 50)
 
 http://chart.apis.google.com/chart?chs=100x50&cht=lc&chd=s%3A777434&chls=1%2C1%2C0&chco=0000ff&wiki=foo.png 
 
-TODO: document sparklines & barcharts
+TODO: document barcharts (AddBars, horiz/vert, stacked/not, bar thickness, gap, group gap)
 
-TODO: document formatters
+TODO: Document pie charts (AddSegment, 2d/3d, colors?)
+
+TODO: document formatters (default, how to write your own)
 
 = Extra Params =
 
@@ -139,8 +154,10 @@ print '<img style="display:inline;" src="%s">' % chart.Url(40, 12)
 
 Which gives you a tiny graph http://chart.apis.google.com/chart?chd=s%3ADMoqiwaiqr624&chco=0000ff&chs=40x12&cht=lfi&chls=1%2C1%2C0&wiki=foo.png showing that this stock is doing well.
 
-
+# TODO: make up a more realistic example for extra params
 (Of course, if you wanted a sparkline, what you would really do is use the `line_chart.Sparkline` class instead of `line_chart.LineChart`).
+
+TODO: Document enhanced URL encoding, escape URL option, url base
 
 = Deprecations =
 

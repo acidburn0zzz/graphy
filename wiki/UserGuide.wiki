@@ -232,11 +232,25 @@ TODO Write me
 
 
 == Caveats/Bugs ==
-Although the length of your bars will be scaled to fit in your chart, the width of the bars is not scaled automatically at all.  If you ask for a chart that's too narrow to fit all the bars, it will be cropped.  This is a limitation of the Google Chart API which is difficult to work around in Graphy.  I usually end up using trial and error to find the right size.
+Although the length of your bars will be scaled to fit in your chart, the width of the bars is not scaled automatically at all.  If you ask for a chart that's too narrow to fit all the bars, it will be cropped.  This is a limitation of the Google Chart API which is difficult to work around in Graphy.  I usually end up using trial and error to find the right size.  
 
-TODO give example
+For example, this crops the 4th bar:
+{{{
+from graphy.backends import google_chart_api
+chart = google_chart_api.BarChart([1, 2, 3, 4])
+print chart.display.Img(110, 110)
+}}}
+http://chart.apis.google.com/chart?chd=s%3ADVo6&chco=0000ff&chs=110x110&cht=bvg&wiki=foo.png
 
-TODO document bars that are too long.
+Google Chart API drops bars that are longer than your axis maximum.  For example, the 4th bar doesn't show up here:
+{{{
+from graphy.backends import google_chart_api
+chart = google_chart_api.BarChart([1, 2, 3, 4])
+chart.left.max = 3
+print chart.display.Img(130, 130)
+}}}
+http://chart.apis.google.com/chart?chd=s%3ADg9_&chco=0000ff&chs=130x130&cht=bvg&wiki=foo.png
+
 
 = Pie Charts = 
 

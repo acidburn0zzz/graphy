@@ -2,7 +2,6 @@
 #labels Featured
 
 = Graphy =
-
 Graphy is a simple Python library for generating charts. It tries to get out of the way and let you just work with your data. At the moment, it produces charts using the Google Chart API. 
 
 = Quick Start =
@@ -26,7 +25,7 @@ http://chart.apis.google.com/chart?chxt=x&chs=400x100&cht=lc&chxl=0%3A%7CJan%7CF
 Line charts are made by constructing a `LineChart` object and calling either its `display.Url()` or `display.Img()` methods.
 
 == Data Series ==
-Currently, `LineChart.__init__()` only accepts a single data series.  If you want to chart multiple series, you can call `LineChart.AddLine` to add them.
+You can specify a single data series when you construct a new chart (`LineChart([1, 2,3 ])`).  If you want to chart multiple series, you can call `LineChart.AddLine` to add them.
 
 You can control the display of each series by providing `AddLine` with:
   * Label, a string which will be used to identify the series in the legend.
@@ -52,15 +51,39 @@ print chart.display.Img(250, 100)
 
 http://chart.apis.google.com/chart?chd=s%3A64sVGEEDGRs4%2CMRXfltxwqiZR&chco=006F00%2C0000FF&chs=250x100&cht=lc&chls=2%2C1%2C0%7C1%2C8%2C4&wiki=foo.png
 
+If you have gaps in your data, they are represented with None.  For example, `google_chart_api.LineChart([10, 12, 13, 11, None, 8, 9, 7]).display.Url(100, 50)` gives this: http://chart.apis.google.com/chart?chd=s%3Afx6o_MVD&chco=0000ff&chs=100x50&cht=lc&chls=1%2C1%2C0&wiki=foo.png
+
 TODO: Document markers
 
 TODO: Document auto formatters a little
 
-TODO: Document None in data
-
 TODO: Document legends (auto & inline)
+== Legends ==
+If you specify labels when you add data series to the chart, then the chart will have a legend.  For example:
 
-TODO: Document sparklines
+{{{
+from graphy.backends import google_chart_api
+
+temperature = [18, 24, 32, 42, 51, 61, 66, 65, 57, 46, 35, 24]
+heating_cost = [78, 75, 60, 30, 10, 7, 8, 6, 10, 25, 60, 75]
+
+chart = google_chart_api.LineChart()
+chart.AddLine(heating_cost, label="Heating Cost")
+chart.AddLine(temperature, label="Temperature")
+print chart.display.Img(250, 100)
+}}}
+
+http://chart.apis.google.com/chart?chd=s%3A64sVGEEDGRs4%2CMRXfltxwqiZR&chco=0000ff%2Cff0000&chs=250x100&cht=lc&chls=1%2C1%2C0%7C1%2C1%2C0&chdl=Heating%20Cost%7CTemperature&wiki=foo.png
+
+Personally, I don't like legends.  They disconnect the label from the data, making the chart harder to read.  The InlineLegend formatter can help, by replacing the legend with labels on the right-hand axis:
+{{{
+# Re-using chart from the last example...
+from graphy import formatters
+chart.AddFormatter(formatters.InlineLegend)
+print chart.display.Img(250, 100)
+}}}
+http://chart.apis.google.com/chart?chxt=r&chd=s%3A64sVGEEDGRs4%2CMRXfltxwqiZR&chxp=0%2C75%2C24&chxr=0%2C2.4%2C81.6&chco=0000ff%2Cff0000&chs=250x100&cht=lc&chxl=0%3A%7CHeating%20Cost%7CTemperature&chls=1%2C1%2C0%7C1%2C1%2C0&wiki=foo.png
+
 
 == Axes ==
 
@@ -137,6 +160,17 @@ TODO: document barcharts (AddBars, horiz/vert, stacked/not, bar thickness, gap, 
 TODO: Document pie charts (AddSegment, 2d/3d, colors?)
 
 TODO: document formatters (default, how to write your own)
+
+= Sparklines =
+In addition to LineCharts, there's also a Sparkline class.  This works like LineCharts, but doesn't have axes.
+
+{{{
+prices = [78, 102, 175, 181, 160, 195, 138, 158, 179, 183, 222, 211, 215]
+chart= google_chart_api.Sparkline(prices)
+print '<img style="display:inline;" src="%s">' % chart.display.Url(40, 12)
+}}}
+
+Which gives you a tiny graph http://chart.apis.google.com/chart?chd=s%3ADMoqiwaiqr624&chco=0000ff&chs=40x12&cht=lfi&chls=1%2C1%2C0&wiki=foo.png  which you could inline in your webpage.
 
 = Extra Params =
 

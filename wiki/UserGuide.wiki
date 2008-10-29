@@ -51,7 +51,11 @@ print chart.display.Img(250, 100)
 
 http://chart.apis.google.com/chart?chd=s%3A64sVGEEDGRs4%2CMRXfltxwqiZR&chco=006F00%2C0000FF&chs=250x100&cht=lc&chls=2%2C1%2C0%7C1%2C8%2C4&wiki=foo.png
 
-If you have gaps in your data, they are represented with None.  For example, `google_chart_api.LineChart([10, 12, 13, 11, None, 8, 9, 7]).display.Url(100, 50)` gives this: http://chart.apis.google.com/chart?chd=s%3Afx6o_MVD&chco=0000ff&chs=100x50&cht=lc&chls=1%2C1%2C0&wiki=foo.png
+If you have gaps in your data, they are represented with None.  For example, 
+{{{
+google_chart_api.LineChart([10, 12, 13, 11, None, 8, 9, 7]).display.Url(100, 50)
+}}}
+http://chart.apis.google.com/chart?chd=s%3Afx6o_MVD&chco=0000ff&chs=100x50&cht=lc&chls=1%2C1%2C0&wiki=foo.png
 
 TODO: Document markers
 
@@ -172,26 +176,28 @@ print '<img style="display:inline;" src="%s">' % chart.display.Url(40, 12)
 
 Which gives you a tiny graph http://chart.apis.google.com/chart?chd=s%3ADMoqiwaiqr624&chco=0000ff&chs=40x12&cht=lfi&chls=1%2C1%2C0&wiki=foo.png  which you could inline in your webpage.
 
-= Extra Params =
+= Google Chart API specifics =
+
+Options which are specific to the Google Chart API live in the display object of a chart (i.e. `chart.display`)
+
+By default, data is encoded using the simple encoding, which is terse but low-resolution.  If you need more precision, you can enable enhanced encoding by setting `chart.display.enhanced_encoding = True`.  
+
+If you don't want the URL to be escaped, you can turn off escaping by setting `chart.display.escape_url = False`.  Unescaped URLs might not be valid in HTML, but they are easier to read which can be useful when debugging.
+
+== Extra Params ==
 
 You can specify individual Google Chart API parameters. This is meant as an escape-hatch in case you either want to use a parameter which `google_chart_api` doesn't support, or in case you want to override one of the parameters `google_chart_api` is generating for you.  To override parameters, add them to the `chart.display.extra_params` dict.  Any parameters you add to this will show up in the final URL.
 
 There a list of non-abbreviated parameter names for your convenience (in `google_chart_api.py`).  Keys in the extra_params dict can be either short Google Chart URL parameters (like `chf`), or the longer equivalent (like `fill`).
 
-For example, if you wanted to use chart type `'lfi'` to make a sparkline, you could do it like this:
+For example, if you wanted to set a linear gradient background color on a chart, using 'chf', you could do it like this:
 {{{
 prices = [78, 102, 175, 181, 160, 195, 138, 158, 179, 183, 222, 211, 215]
 chart = google_chart_api.LineChart(prices)
-chart.display.extra_params['chart_type'] = 'lfi'  # 'chart_type' is a convenience name for 'cht'
-print '<img style="display:inline;" src="%s">' % chart.Url(40, 12)
+chart.display.extra_params['chf'] = 'c,lg,90,ffffff,1,77aaff,0'
+print chart.display.Img(200, 100)
 }}}
-
-Which gives you a tiny graph http://chart.apis.google.com/chart?chd=s%3ADMoqiwaiqr624&chco=0000ff&chs=40x12&cht=lfi&chls=1%2C1%2C0&wiki=foo.png showing that this stock is doing well.
-
-# TODO: make up a more realistic example for extra params
-(Of course, if you wanted a sparkline, what you would really do is use the `line_chart.Sparkline` class instead of `line_chart.LineChart`).
-
-TODO: Document enhanced URL encoding, escape URL option, url base
+http://chart.apis.google.com/chart?chd=s%3ADMoqiwaiqr624&chf=c%2Clg%2C90%2Cffffff%2C1%2C77aaff%2C0&chco=0000ff&chs=200x100&cht=lc&chls=1%2C1%2C0&wiki=foo.png
 
 = Deprecations =
 

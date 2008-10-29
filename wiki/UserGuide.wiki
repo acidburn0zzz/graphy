@@ -1,8 +1,12 @@
 #summary Explains how to use Graphy
 #labels Featured
 
+
 = Graphy =
 Graphy is a simple Python library for generating charts. It tries to get out of the way and let you just work with your data. At the moment, it produces charts using the Google Chart API. 
+
+==Contents==
+<wiki:toc max_depth="1" />
 
 = Quick Start =
 Here's a quick example, plotting average monthly rainfall for Sunnyvale, CA:

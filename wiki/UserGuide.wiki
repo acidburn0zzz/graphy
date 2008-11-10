@@ -7,7 +7,7 @@ Graphy is a simple Python library for generating charts. It tries to get out of 
 
 ==Contents==
 
-<wiki:toc max_depth="1" />
+<wiki:toc max_depth="2" />
 
 = Quick Start =
 
@@ -199,6 +199,19 @@ print chart.display.Img(400, 120)
 
 http://chart.apis.google.com/chart?chxt=x&chd=s%3A6ya&chco=0000ff&chs=400x120&cht=bvg&chxl=0%3A%7CSJ%7CSF%7COak&wiki=foo.png
 
+You can add labels & grids the same as with line charts:
+{{{
+# re-using the chart from the previous example
+chart.left.min = 0
+chart.left.max = 1000000
+chart.left.labels = ['0', '500K', '1000K']
+chart.left.grid_spacing = 500000
+print chart.display.Img(400, 120)
+}}}
+http://chart.apis.google.com/chart?chxt=y%2Cx&chd=s%3A3wY&chxr=0%2C0%2C1000000&chco=0000ff&chs=400x120&cht=bvg&chxl=0%3A%7C0%7C500K%7C1000K%7C1%3A%7CSJ%7CSF%7COak&chg=0%2C50%2C1%2C0&wiki=foo.png
+
+== Vertical/Horizontal Orientation ==
+
 You can change the horizontal/vertical orientation by setting `chart.vertical` to either True or False.  This does _not_ swap the axes around for you.  The left axis labels will continue to be display on the left axis, for example.
 {{{
 cities = ('San Jose', 'San Francisco', 'Oakland')
@@ -211,17 +224,6 @@ chart.bottom.min = 0
 print chart.display.Img(200, 120)
 }}}
 http://chart.apis.google.com/chart?chxt=y&chd=s%3A6ya&chco=0000ff&chs=200x120&cht=bhg&chxl=0%3A%7COakland%7CSan%20Francisco%7CSan%20Jose&wiki=foo.png
-
-You can add labels & grids the same as with line charts:
-{{{
-# re-using the chart from the previous example
-chart.bottom.min = 0
-chart.bottom.max = 1000000
-chart.bottom.labels = ['0', '500K', '1000K']
-chart.bottom.grid_spacing = 500000
-print chart.display.Img(200, 120)
-}}}
-http://chart.apis.google.com/chart?chxt=y%2Cx&chd=s%3A3wY&chxr=1%2C0%2C1000000&chco=0000ff&chs=200x120&cht=bhg&chxl=0%3A%7COakland%7CSan%20Francisco%7CSan%20Jose%7C1%3A%7C0%7C500K%7C1000K&chg=50%2C0%2C1%2C0&wiki=foo.png
 
 ==Multiple Series==
 
@@ -306,8 +308,11 @@ TODO: Document pie charts (AddSegment, 2d/3d, colors?)
 
 Options which are specific to the Google Chart API live in the display object of a chart (i.e. `chart.display`)
 
+== Data Encoding ==
+
 By default, data is encoded using the simple encoding, which is terse but low-resolution.  If you need more precision, you can enable enhanced encoding by setting `chart.display.enhanced_encoding = True`.  
 
+== URL Escaping ==
 If you don't want the URL to be escaped, you can turn off escaping by setting `chart.display.escape_url = False`.  Unescaped URLs might not be valid in HTML, but they are easier to read which can be useful when debugging.
 
 == Extra Params ==

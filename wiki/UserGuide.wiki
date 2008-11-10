@@ -225,11 +225,32 @@ http://chart.apis.google.com/chart?chxt=y%2Cx&chd=s%3A3wY&chxr=1%2C0%2C1000000&c
 
 ==Multiple Series==
 
-If you have multiple series:
+You can add more series by calling `chart.AddBars`.  
 {{{
-TODO Write me
-TODO: document barcharts (AddBars, stacked/not)
+cities = ('San Jose', 'San Francisco', 'Oakland')
+pop_1960 = (200000, 740000, 370000)
+pop_2000 = (900000, 780000, 400000)
+
+chart = google_chart_api.BarChart()
+chart.AddBars(pop_1960, label='1960', color='ccccff')
+chart.AddBars(pop_2000, label='2000', color='0000aa')
+chart.vertical = False
+chart.left.labels = cities
+chart.bottom.min = 0
+print chart.display.Img(300, 180)
 }}}
+http://chart.apis.google.com/chart?chxt=y&chd=s%3ANwY%2C6ya&chco=ccccff%2C0000aa&chs=300x180&cht=bhg&chxl=0%3A%7COakland%7CSan%20Francisco%7CSan%20Jose&chdl=1960%7C2000&wiki=foo.png
+
+You can do stacked bar plots by setting `chart.stacked = True`.  For example:
+{{{
+# Reusing the same chart from previous example
+# Replace the 2000 data series with the incremental change from 1960 to 2000.
+chart.data[1].data = [pop_2000[i] - pop_1960[i] for i in range(len(pop_2000))]
+chart.stacked = True
+print chart.display.Img(300, 100)
+}}}
+http://chart.apis.google.com/chart?chxt=y&chd=s%3ANwY%2CtDC&chco=ccccff%2C0000aa&chs=300x100&cht=bhs&chxl=0%3A%7COakland%7CSan%20Francisco%7CSan%20Jose&chdl=1960%7C2000&wiki=foo.png
+
 
 ==Bar size and spacing==
 

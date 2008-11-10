@@ -41,7 +41,7 @@ _Note: The Google Chart API assumes data is equally-spaced Y-values.  That is, t
 
 When you construct a new chart, you can provide a single series of data in the constructor.  Charts also have methods to add more data series.  For example, LineChart.AddLine or BarChart.AddBar.  Generally, these methods take the same standard arguments, plus a few arguments specific to the type of chart:
   * point, the list of numbers representing the data.
-  * color, encoded as a hex string (like `'00ff00'`).  If you don't provide colors, they'll be picked automatically (see the section on Formatters TODO link)
+  * color, encoded as a hex string (like `'00ff00'`).  If you don't provide colors, they'll be picked automatically (see the section on [UserGuide#Formatters Formatters])
   * label, a string with the series' label for the legend.  If at least one series has a label, then the legend will be shown automatically.
 
 If you have gaps in your data, they are represented with None.  For example, 
@@ -51,37 +51,6 @@ google_chart_api.LineChart([10, 12, 13, 11, None, 8, 9, 7]).display.Url(100, 50)
 http://chart.apis.google.com/chart?chd=s%3Afx6o_MVD&chco=0000ff&chs=100x50&cht=lc&chls=1%2C1%2C0&wiki=foo.png
 
 (Behind the scenes, charts store their data in DataSeries objects, which hold the points in the series, the color of the series, and a label for the legend.  Generally, you won't need to deal with DataSeries objects.)
-
-== Legends ==
-
-If you specify labels when you add data series to the chart, then the chart will have a legend.  For example:
-
-{{{
-from graphy.backends import google_chart_api
-
-temperature = [18, 24, 32, 42, 51, 61, 66, 65, 57, 46, 35, 24]
-heating_cost = [78, 75, 60, 30, 10, 7, 8, 6, 10, 25, 60, 75]
-
-chart = google_chart_api.LineChart()
-chart.AddLine(heating_cost, label="Heating Cost")
-chart.AddLine(temperature, label="Temperature")
-print chart.display.Img(250, 100)
-}}}
-
-http://chart.apis.google.com/chart?chd=s%3A64sVGEEDGRs4%2CMRXfltxwqiZR&chco=0000ff%2Cff0000&chs=250x100&cht=lc&chls=1%2C1%2C0%7C1%2C1%2C0&chdl=Heating%20Cost%7CTemperature&wiki=foo.png
-
-Personally, I don't like legends.  They disconnect the label from the data, making the chart harder to read.  The InlineLegend formatter can help, by replacing the legend with labels on the right-hand axis:
-{{{
-# Re-using chart from the last example...
-from graphy import formatters
-chart.AddFormatter(formatters.InlineLegend)
-print chart.display.Img(250, 100)
-}}}
-http://chart.apis.google.com/chart?chxt=r&chd=s%3A64sVGEEDGRs4%2CMRXfltxwqiZR&chxp=0%2C75%2C24&chxr=0%2C2.4%2C81.6&chco=0000ff%2Cff0000&chs=250x100&cht=lc&chxl=0%3A%7CHeating%20Cost%7CTemperature&chls=1%2C1%2C0%7C1%2C1%2C0&wiki=foo.png
-
-
-
-TODO: Document auto formatters a little
 
 == Axes ==
 
@@ -126,19 +95,16 @@ print chart.display.Img(250, 100)
 
 http://chart.apis.google.com/chart?chxt=y%2Cr%2Cx&chs=250x100&cht=lc&chxp=0%2C10%2C32%2C50%2C70%7C1%2C49%2C25%7C2%2C0%2C3%2C6%2C9&chxl=0%3A%7C10%7C32%7C50%7C70%7C1%3A%7CSunnyvale%7CChicago%7C2%3A%7CJan%7CApr%7CJul%7CSep&chxr=0%2C0%2C80%7C1%2C0%2C80%7C2%2C0%2C12&chd=s%3Aloqsvy00yvpll%2CTYemu154yqgXT&chls=1%2C1%2C0%7C1%2C8%2C4&chco=0000ff%2Cff0000&wiki=foo.png
 
-TODO: Explain how the auto-scaling and auto min/max on left & right stuff works.  Sometimes you don't need to specify min/max, but when?
-
 TODO: Document label separator.
 
-TODO: Document grids
-
-
 == Scaling ==
+
+TODO: Explain how the auto-scaling and auto min/max on left & right stuff works.  Sometimes you don't need to specify min/max, but when?
 
 By default, your data will be scaled to fill the entire chart vertically.  This makes it easy to get a chart quickly, but it can be misleading.  For example, this looks like a dramatic drop in traffic:
 {{{
 traffic = [578, 579, 580, 550, 545, 552]
-chart = line_chart.LineChart(traffic)
+chart = google_chart_api.LineChart(traffic)
 print chart.display.Img(100, 50)
 }}}
 
@@ -153,6 +119,40 @@ print chart.display.Img(100, 50)
 
 http://chart.apis.google.com/chart?chs=100x50&cht=lc&chd=s%3A777434&chls=1%2C1%2C0&chco=0000ff&wiki=foo.png 
 
+== Legends ==
+
+If you specify labels when you add data series to the chart, then the chart will have a legend.  For example:
+
+{{{
+from graphy.backends import google_chart_api
+
+temperature = [18, 24, 32, 42, 51, 61, 66, 65, 57, 46, 35, 24]
+heating_cost = [78, 75, 60, 30, 10, 7, 8, 6, 10, 25, 60, 75]
+
+chart = google_chart_api.LineChart()
+chart.AddLine(heating_cost, label="Heating Cost")
+chart.AddLine(temperature, label="Temperature")
+print chart.display.Img(250, 100)
+}}}
+
+http://chart.apis.google.com/chart?chd=s%3A64sVGEEDGRs4%2CMRXfltxwqiZR&chco=0000ff%2Cff0000&chs=250x100&cht=lc&chls=1%2C1%2C0%7C1%2C1%2C0&chdl=Heating%20Cost%7CTemperature&wiki=foo.png
+
+Personally, I don't like legends.  They disconnect the label from the data, making the chart harder to read.  The InlineLegend formatter can help, by replacing the legend with labels on the right-hand axis:
+{{{
+# Re-using chart from the last example...
+from graphy import formatters
+chart.AddFormatter(formatters.InlineLegend)
+print chart.display.Img(250, 100)
+}}}
+http://chart.apis.google.com/chart?chxt=r&chd=s%3A64sVGEEDGRs4%2CMRXfltxwqiZR&chxp=0%2C75%2C24&chxr=0%2C2.4%2C81.6&chco=0000ff%2Cff0000&chs=250x100&cht=lc&chxl=0%3A%7CHeating%20Cost%7CTemperature&chls=1%2C1%2C0%7C1%2C1%2C0&wiki=foo.png
+
+
+== Grids ==
+
+TODO: Document grids
+
+
+== Formatters ==
 
 TODO: document formatters (default, how to write your own)
 
@@ -161,16 +161,15 @@ TODO: document formatters (default, how to write your own)
 {{{
 from graphy.backends import google_chart_api
 
-chart = google_chart_api.LineChart([0, 4, 3, 10, 12, 29, 45, 51, 60, 71])
+chart = google_chart_api.LineChart()
+chart.AddLine([0, 4, 3, 10, 12, 29, 45, 51, 60, 71])
 print chart.display.Url(200, 100)
 }}}
 http://chart.apis.google.com/chart?chd=s%3ADGFLMZmry6&chco=0000ff&chs=200x100&cht=lc&chls=1%2C1%2C0&wiki=foo.png
 
-== Data Series ==
+== Line patterns and width ==
 
-You can add additional data series to a LineChart with `LineChart.AddLine`, which takes:
-  * The standard points, color, label (described in TODO: link)
-  * Markers, passed as a list of tuples specifying a Marker object and the X-position to draw it at.  (See the section on markers for more info)
+`LineChart.AddLine` has 2 arguments for controling the appearance of the line:
   * A `LinePattern` object.  You can make your own, but some simple ones, like `LinePattern.SOLID` and `LinePattern.DASHED` are provided for convenience.
   * Width of the line, in pixels.  `LinePattern.THIN` and `LinePattern.THICK` are provided for convenience.
 
@@ -191,6 +190,7 @@ print chart.display.Img(250, 100)
 
 http://chart.apis.google.com/chart?chd=s%3A64sVGEEDGRs4%2CMRXfltxwqiZR&chco=006F00%2C0000FF&chs=250x100&cht=lc&chls=2%2C1%2C0%7C1%2C8%2C4&wiki=foo.png
 
+== Markers on Lines ==
 
 TODO: Document markers
 

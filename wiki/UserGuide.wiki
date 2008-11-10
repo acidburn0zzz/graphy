@@ -154,7 +154,7 @@ TODO: Document grids
 
 == Formatters ==
 
-TODO: document formatters (default, how to write your own)
+TODO: document formatters (default ones, how to remove them, other non-default formatters, how to write your own)
 
 = Line Charts =
 
@@ -327,7 +327,7 @@ http://chart.apis.google.com/chart?chd=s%3ADg9_&chco=0000ff&chs=130x130&cht=bvg&
 
 = Pie Charts = 
 
-TODO: Document pie charts (AddSegment, 2d/3d, colors?)
+TODO: Document pie charts (AddSegment & segements in general, 2d/3d, colors?)
 
 = Google Chart API specifics =
 

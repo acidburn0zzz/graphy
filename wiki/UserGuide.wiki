@@ -9,7 +9,8 @@ Graphy is a simple Python library for generating charts. It tries to get out of 
 
 <wiki:toc max_depth="2" />
 
-= Quick Start =
+= Basics =
+== Quick Start ==
 
 Here's a quick example, plotting average monthly rainfall for Sunnyvale, CA:
 {{{
@@ -27,37 +28,21 @@ That will print out an HTML img tag for this chart:
 
 http://chart.apis.google.com/chart?chxt=x&chs=400x100&cht=lc&chxl=0%3A%7CJan%7CFeb%7CMar%7CApr%7CMay%7CJun%7CJul%7CAug%7CSep%7COct%7CNov%7CDec&chd=s%3A66ySKFDDGSir&chls=1%2C1%2C0&chco=0000ff&wiki=foo.png
 
-= Line Charts =
+== Creating Charts ==
 
-Line charts are made by constructing a `LineChart` object and calling either its `display.Url()` or `display.Img()` methods.
+The basic approach to creating a chart is the same reglardless of what type of chart you are making:
+  # Use a method from `graphy.backends.google_chart_api` (like `LineChart` or `BarChart`) to get a chart object.  (These helper methods construct a chart object for you and populate its `display` field, which you'll use in step #3)
+  # Populate the chart object with your data, set up labels, legends, grids, etc.
+  # Call the chart's `display.Url()` or `display.Img()` methods to get a Google Chart URL (The chart's `display` object is responsible for rendering the chart to a Google Chart URL, and will be populated by the factory methods in graphy.backends.google_chart_api)
 
 == Data Series ==
 
-You can specify a single data series when you construct a new chart (`LineChart([1, 2,3 ])`).  If you want to chart multiple series, you can call `LineChart.AddLine` to add them.
+_Note: The Google Chart API assumes data is equally-spaced Y-values.  That is, there is no concept of X/Y pairs.  When you specify data, you are only specifying the Y-values, and they will be shown equally spaced along the X-axis._
 
-You can control the display of each series by providing `AddLine` with:
-  * Label, a string which will be used to identify the series in the legend.
-  * Markers, passed as a list of tuples specifying a Marker object and the X-position to draw it at.  (See the section on markers for more info)
-  * Color, encoded as a hex string (like `'00ff00'`).  If you don't provide colors, the `LineChart` object will pick colors for you.
-  * A `LinePattern` object.  You can make your own, but some simple ones, like `LinePattern.SOLID` and `LinePattern.DASHED` are provided for convenience.
-  * Width of the line, in pixels.  `LinePattern.THIN` and `LinePattern.THICK` are provided for convenience.
-
-{{{
-from graphy.backends import google_chart_api
-from graphy import line_chart
-
-temperature = [18, 24, 32, 42, 51, 61, 66, 65, 57, 46, 35, 24]
-heating_cost = [78, 75, 60, 30, 10, 7, 8, 6, 10, 25, 60, 75]
-
-chart = google_chart_api.LineChart()
-chart.AddLine(heating_cost, color='006F00',                 
-                pattern=line_chart.LineStyle.SOLID, width=line_chart.LineStyle.THICK)
-chart.AddLine(temperature, color='0000FF',
-                pattern=line_chart.LineStyle.DASHED)
-print chart.display.Img(250, 100)
-}}}
-
-http://chart.apis.google.com/chart?chd=s%3A64sVGEEDGRs4%2CMRXfltxwqiZR&chco=006F00%2C0000FF&chs=250x100&cht=lc&chls=2%2C1%2C0%7C1%2C8%2C4&wiki=foo.png
+When you construct a new chart, you can provide a single series of data in the constructor.  Charts also have methods to add more data series.  For example, LineChart.AddLine or BarChart.AddBar.  Generally, these methods take the same standard arguments, plus a few arguments specific to the type of chart:
+  * point, the list of numbers representing the data.
+  * color, encoded as a hex string (like `'00ff00'`).  If you don't provide colors, they'll be picked automatically (see the section on Formatters TODO link)
+  * label, a string with the series' label for the legend.  If at least one series has a label, then the legend will be shown automatically.
 
 If you have gaps in your data, they are represented with None.  For example, 
 {{{
@@ -65,9 +50,7 @@ google_chart_api.LineChart([10, 12, 13, 11, None, 8, 9, 7]).display.Url(100, 50)
 }}}
 http://chart.apis.google.com/chart?chd=s%3Afx6o_MVD&chco=0000ff&chs=100x50&cht=lc&chls=1%2C1%2C0&wiki=foo.png
 
-TODO: Document markers
-
-TODO: Document auto formatters a little
+(Behind the scenes, charts store their data in DataSeries objects, which hold the points in the series, the color of the series, and a label for the legend.  Generally, you won't need to deal with DataSeries objects.)
 
 == Legends ==
 
@@ -96,6 +79,9 @@ print chart.display.Img(250, 100)
 }}}
 http://chart.apis.google.com/chart?chxt=r&chd=s%3A64sVGEEDGRs4%2CMRXfltxwqiZR&chxp=0%2C75%2C24&chxr=0%2C2.4%2C81.6&chco=0000ff%2Cff0000&chs=250x100&cht=lc&chxl=0%3A%7CHeating%20Cost%7CTemperature&chls=1%2C1%2C0%7C1%2C1%2C0&wiki=foo.png
 
+
+
+TODO: Document auto formatters a little
 
 == Axes ==
 
@@ -169,6 +155,45 @@ http://chart.apis.google.com/chart?chs=100x50&cht=lc&chd=s%3A777434&chls=1%2C1%2
 
 
 TODO: document formatters (default, how to write your own)
+
+= Line Charts =
+
+{{{
+from graphy.backends import google_chart_api
+
+chart = google_chart_api.LineChart([0, 4, 3, 10, 12, 29, 45, 51, 60, 71])
+print chart.display.Url(200, 100)
+}}}
+http://chart.apis.google.com/chart?chd=s%3ADGFLMZmry6&chco=0000ff&chs=200x100&cht=lc&chls=1%2C1%2C0&wiki=foo.png
+
+== Data Series ==
+
+You can add additional data series to a LineChart with `LineChart.AddLine`, which takes:
+  * The standard points, color, label (described in TODO: link)
+  * Markers, passed as a list of tuples specifying a Marker object and the X-position to draw it at.  (See the section on markers for more info)
+  * A `LinePattern` object.  You can make your own, but some simple ones, like `LinePattern.SOLID` and `LinePattern.DASHED` are provided for convenience.
+  * Width of the line, in pixels.  `LinePattern.THIN` and `LinePattern.THICK` are provided for convenience.
+
+{{{
+from graphy.backends import google_chart_api
+from graphy import line_chart
+
+temperature = [18, 24, 32, 42, 51, 61, 66, 65, 57, 46, 35, 24]
+heating_cost = [78, 75, 60, 30, 10, 7, 8, 6, 10, 25, 60, 75]
+
+chart = google_chart_api.LineChart()
+chart.AddLine(heating_cost, color='006F00',                 
+                pattern=line_chart.LineStyle.SOLID, width=line_chart.LineStyle.THICK)
+chart.AddLine(temperature, color='0000FF',
+                pattern=line_chart.LineStyle.DASHED)
+print chart.display.Img(250, 100)
+}}}
+
+http://chart.apis.google.com/chart?chd=s%3A64sVGEEDGRs4%2CMRXfltxwqiZR&chco=006F00%2C0000FF&chs=250x100&cht=lc&chls=2%2C1%2C0%7C1%2C8%2C4&wiki=foo.png
+
+
+TODO: Document markers
+
 
 = Sparklines =
 
@@ -279,7 +304,7 @@ print chart.display.Img(400, 120)
 http://chart.apis.google.com/chart?chd=s%3AEPcsx64rcRM&chco=0000ff&chbh=10%2C4%2C0&chs=400x120&cht=bvg&wiki=foo.png
 
 
-== Caveats/Bugs ==
+== Caveats/Bugs With Bar Charts ==
 Although the length of your bars will be scaled to fit in your chart, the width of the bars is not scaled automatically at all.  If you ask for a chart that's too narrow to fit all the bars, it will be cropped.  This is a limitation of the Google Chart API which is difficult to work around in Graphy.  I usually end up using trial and error to find the right size.  
 
 For example, this crops the 4th bar:

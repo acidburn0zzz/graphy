@@ -54,48 +54,55 @@ http://chart.apis.google.com/chart?chd=s%3Afx6o_MVD&chco=0000ff&chs=100x50&cht=l
 
 == Axes ==
 
-TODO: This section is out of date and doesn't explain multiple axes.
+Axis objects are used to specify label and scale information.  
 
-Most charts support axes on all four sides of the chart: `left`, `bottom`, `right`, and `top`. A typical `LineChart` has two visible axes: the `bottom` axis represents the independent variable ("x"), and the `left` axis represents the dependent variable ("y").
+Most charts support axes on all four sides of the chart (left, bottom, right, and top).  In addition, multiple axes can be added at each position.  For convenience, the chart exposes the first axis in each position though `left`, `bottom`, `right`, and `top`.  
 
-To add labels to an axis, specify `axis.labels`. By default, the labels will be spread out evenly along the axis; specify `axis.label_positions` to place labels where you want them to go (you may want to set `axis.min` and `axis.max`, as well). This will let you specify your labels in same units as your data. 
+Additional axes can be added and accessed using `AddAxis`, `SetAxis`, and `GetAxis`.  You can use this to have 2 different scales presented, for example.  Note that for the most part, chart.left and chart.bottom are the main axes used for many calculations (like data scaling) and the additional axes are used for attaching labels to the chart.  There's an example of doing this in the Labels section.
+
+== Labels ==
+To add labels to an axis, specify `axis.labels`. By default, the labels will be spread out evenly along the axis; specify `axis.label_positions` to place labels where you want them to go (`label_positions` are specified in the same units as your data, so you maybe want to explicitly set `axis.min` and `axis.max`)
 
 {{{
 from graphy.backends import google_chart_api
-from graphy import line_chart
 
-# Average Monthly Temperatures
-sunnyvale = [49, 52, 55, 58, 62, 66, 68, 68, 66, 61, 54, 48, 49]
-chicago   = [25, 31, 39, 50, 60, 70, 75, 74, 66, 55, 42, 30, 25]
-chart = google_chart_api.LineChart()
-chart.AddSeries(sunnyvale, label='Sunnyvale')  # label is used by InlineLegend, below.
-chart.AddSeries(chicago, style=line_chart.LineStyle.dashed, label='Chicago')
+temperatures = [25, 31, 39, 50, 60, 70, 75, 74, 66, 55, 42, 30, 25]
+chart = google_chart_api.LineChart(temperatures)
 
 chart.bottom.min = 0
-chart.bottom.max = 12
-chart.bottom.labels = ['Jan', 'Apr', 'Jul', 'Sep']
-chart.bottom.label_positions = [0, 3, 6, 9]
+chart.bottom.max = 13  # 13, not 12, because we repeat Jan at end.
+chart.bottom.labels = ['Jan', 'Apr', 'Jul', 'Sep', 'Dec']
+chart.bottom.label_positions = [0, 3, 6, 9, 12]
 
 chart.left.min = 0
 chart.left.max = 80
 chart.left.labels = [10, 32, 50, 70]
 chart.left.label_positions = [10, 32, 50, 70]
 
-# InlineLegend adds some labels to the right side of the chart.  We could also do it by hand:
-#   chart.right.min = 0
-#   chart.right.max = 80
-#   chart.right.labels = ['Sunnyvale', 'Chicago']
-#   chart.right.label_positions = [sunnyvale[-1], chicago[-1]]
-# TODO: Talk about InlineLegend separately from introducing labels
-chart.AddFormatter(formatters.InlineLegend)
-
-print chart.display.Img(250, 100)
+print chart.display.Url(250, 100)
 }}}
 
+http://chart.apis.google.com/chart?chxt=y%2Cx&chd=s%3ATYemu154yqgXT&chxp=0%2C10%2C32%2C50%2C70|1%2C0%2C3%2C6%2C9%2C12&chxr=0%2C0%2C80|1%2C0%2C13&chco=0000ff&chs=250x100&cht=lc&chxl=0%3A|10|32|50|70|1%3A|Jan|Apr|Jul|Sep|Dec&chls=1%2C1%2C0&wiki=foo.png
 
-http://chart.apis.google.com/chart?chxt=y%2Cr%2Cx&chs=250x100&cht=lc&chxp=0%2C10%2C32%2C50%2C70%7C1%2C49%2C25%7C2%2C0%2C3%2C6%2C9&chxl=0%3A%7C10%7C32%7C50%7C70%7C1%3A%7CSunnyvale%7CChicago%7C2%3A%7CJan%7CApr%7CJul%7CSep&chxr=0%2C0%2C80%7C1%2C0%2C80%7C2%2C0%2C12&chd=s%3Aloqsvy00yvpll%2CTYemu154yqgXT&chls=1%2C1%2C0%7C1%2C8%2C4&chco=0000ff%2Cff0000&wiki=foo.png
+If you want to add a second set of labels along one of the edges, you'll want to add another axis:
+{{{
+from graphy.backends import google_chart_api
+from graphy import common
 
-TODO: Document label separator.
+chart = google_chart_api.LineChart([9, 7, 5, 6, 3, 4, 5, 4, 2, 1])
+chart.bottom.labels = ['Q1', 'Q2', 'Q3', 'Q4', 'Q1', 'Q2', 'Q3', 'Q4']
+year_axis = chart.AddAxis(common.AxisPosition.BOTTOM, common.Axis())
+year_axis.min = 1  # Line positions up with quarters
+year_axis.max = 8
+year_axis.labels = [2007, 2008]
+year_axis.label_positions = [1, 5]
+
+print chart.display.Url(200, 100)
+}}}
+http://chart.apis.google.com/chart?chxt=x%2Cx&chd=s%3A6selRYeYKD&chxp=1%2C1%2C5&chxr=1%2C1%2C8&chco=0000ff&chs=200x100&cht=lc&chxl=0%3A|Q1|Q2|Q3|Q4|Q1|Q2|Q3|Q4|1%3A|2007|2008&chls=1%2C1%2C0&wiki=foo.png
+
+
+In situations where you are adding labels based on some data (like trying to label certain events in your graph) you can run into problems with labels overlapping each other.  The LabelSeparator formatter attempts to separate labels which are too close together.  See the code in formatters.py for more details.
 
 == Scaling ==
 

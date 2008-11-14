@@ -149,7 +149,37 @@ http://chart.apis.google.com/chart?chxt=r&chd=s%3A64sVGEEDGRs4%2CMRXfltxwqiZR&ch
 
 == Grids ==
 
-TODO: Document grids
+There are currently two approaches for making grids.  The simplest is to set `label_gridlines = True` on either `chart.left` or `chart.right`.  This draws a line across the chart at every label location.  
+{{{
+from graphy.backends import google_chart_api
+
+chart = google_chart_api.LineChart([12, 42, 57, 63, 55, 52, 31, 22])
+chart.bottom.min = 0
+chart.bottom.max = 30
+chart.bottom.labels = [0, 5, 10, 15, 20, 25, 30]
+chart.bottom.label_positions = chart.bottom.labels
+chart.bottom.label_gridlines = True
+chart.left.min = 0
+chart.left.max = 70
+chart.left.labels = [0, 30, 60]
+chart.left.label_positions = chart.left.labels
+chart.left.label_gridlines = True
+print chart.display.Url(200, 100)
+}}}
+http://chart.apis.google.com/chart?chxt=y%2Cx&chd=s%3AKly3wtbT&chxp=0%2C0%2C30%2C60|1%2C0%2C5%2C10%2C15%2C20%2C25%2C30&chxr=0%2C0%2C70|1%2C0%2C30&chxtc=0%2C-200|1%2C-200&chco=0000ff&chs=200x100&cht=lc&chxl=0%3A|0|30|60|1%3A|0|5|10|15|20|25|30&chls=1%2C1%2C0&wiki=foo.png
+
+
+The other option is to set `grid_spacing` on an axis.  This controls the amount of space between gridlines.  Use `grid_spacing` instead of `label_gridlines` when you don't want the grid to match your labels.  Note that min/max have to set to use this.
+{{{
+# Reusing the same chart from the previous example
+chart.bottom.label_gridlines = False
+chart.left.label_gridlines = False
+chart.bottom.grid_spacing = 10
+chart.left.grid_spacing = 15
+print chart.display.Url(200, 100)
+
+}}}
+http://chart.apis.google.com/chart?chxt=y%2Cx&chd=s%3AKly3wtbT&chxp=0%2C0%2C30%2C60|1%2C0%2C5%2C10%2C15%2C20%2C25%2C30&chxr=0%2C0%2C70|1%2C0%2C30&chco=0000ff&chs=200x100&cht=lc&chxl=0%3A|0|30|60|1%3A|0|5|10|15|20|25|30&chls=1%2C1%2C0&chg=33.3%2C21.4%2C1%2C0&wiki=foo.png
 
 
 == Formatters ==

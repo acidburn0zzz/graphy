@@ -41,7 +41,7 @@ _Note: The Google Chart API assumes data is equally-spaced Y-values.  That is, t
 
 When you construct a new chart, you can provide a single series of data in the constructor.  Charts also have methods to add more data series.  For example, LineChart.AddLine or BarChart.AddBar.  Generally, these methods take the same standard arguments, plus a few arguments specific to the type of chart:
   * point, the list of numbers representing the data.
-  * color, encoded as a hex string (like `'00ff00'`).  If you don't provide colors, they'll be picked automatically (see the section on [UserGuide#Formatters Formatters])
+  * color, encoded as a hex string (like `'00ff00'`).  If you don't provide colors, they'll be picked automatically (by AutoColor, see the section on [UserGuide#Formatters Formatters])
   * label, a string with the series' label for the legend.  If at least one series has a label, then the legend will be shown automatically.
 
 If you have gaps in your data, they are represented with None.  For example, 
@@ -61,7 +61,7 @@ Most charts support axes on all four sides of the chart (left, bottom, right, an
 Additional axes can be added and accessed using `AddAxis`, `SetAxis`, and `GetAxis`.  You can use this to have 2 different scales presented, for example.  Note that for the most part, chart.left and chart.bottom are the main axes used for many calculations (like data scaling) and the additional axes are used for attaching labels to the chart.  There's an example of doing this in the Labels section.
 
 == Labels ==
-To add labels to an axis, specify `axis.labels`. By default, the labels will be spread out evenly along the axis; specify `axis.label_positions` to place labels where you want them to go (`label_positions` are specified in the same units as your data, so you maybe want to explicitly set `axis.min` and `axis.max`)
+To add labels to an axis, specify `axis.labels`. By default, the labels will be spread out evenly along the axis; specify `axis.label_positions` to place labels where you want them to go.  `label_positions` are interpreted according to `axis.min` and `axis.max`, so you may want to explicitly set min & max on the axis instead of relying on the AutoScale formatter (see the section on [UserGuide#Scaling scaling] for more info).
 
 {{{
 from graphy.backends import google_chart_api
@@ -102,13 +102,13 @@ print chart.display.Url(200, 100)
 http://chart.apis.google.com/chart?chxt=x%2Cx&chd=s%3A6selRYeYKD&chxp=1%2C1%2C5&chxr=1%2C1%2C8&chco=0000ff&chs=200x100&cht=lc&chxl=0%3A|Q1|Q2|Q3|Q4|Q1|Q2|Q3|Q4|1%3A|2007|2008&chls=1%2C1%2C0&wiki=foo.png
 
 
-In situations where you are adding labels based on some data (like trying to label certain events in your graph) you can run into problems with labels overlapping each other.  The LabelSeparator formatter attempts to separate labels which are too close together.  See the code in formatters.py for more details.
+In situations where you are adding labels based on some data (like trying to label certain events in your graph) you can run into problems with labels overlapping each other.  The LabelSeparator formatter attempts to separate labels which are too close together.  See the section on [UserGuide#Formatters Formatters] for more details.
 
 == Scaling ==
 
-TODO: Explain how the auto-scaling and auto min/max on left & right stuff works.  Sometimes you don't need to specify min/max, but when?
+Data is scaled according to the values in `chart.left.min` and `chart.left.max`.  So, for example, if min = 0 and max = 50, then a value of 0 will be at the bottom of the chart, 25 will be in the middle, and 50 will be at the top.  Axis labels are also positioned according to min & max.
 
-By default, your data will be scaled to fill the entire chart vertically.  This makes it easy to get a chart quickly, but it can be misleading.  For example, this looks like a dramatic drop in traffic:
+If you don't specify min & max, then the AutoScale formatter will pick them such that your data will fill the entire chart vertically.  This makes it easy to get a chart quickly, but it can be misleading.  For example, this looks like a dramatic drop in traffic:
 {{{
 traffic = [578, 579, 580, 550, 545, 552]
 chart = google_chart_api.LineChart(traffic)

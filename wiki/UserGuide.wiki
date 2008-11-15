@@ -366,6 +366,31 @@ http://chart.apis.google.com/chart?chd=s%3ADg9_&chco=0000ff&chs=130x130&cht=bvg&
 
 TODO: Document pie charts (AddSegment & segements in general, 2d/3d, colors?)
 
+{{{
+from graphy.backends import google_chart_api
+chart = google_chart_api.PieChart([200, 400, 50], ['Stock', 'Bonds', 'Cash'])
+print chart.display.Url(100, 200)
+}}}
+http://chart.apis.google.com/chart?chd=s%3Af9P&chl=Stock%7CBonds%7CCash&chs=200x100&cht=p&wiki=foo.png
+
+In addition to passing data to `__init__` you can add segments using `AddSegment`.
+
+
+If `chart.display.is3d` is True, then the chart will be rendered in 3D:
+{{{
+# reusing chart from last example
+chart.display.is3d = True
+print chart.display.Url(200, 100)
+}}}
+http://chart.apis.google.com/chart?chd=s%3Af9P&chl=Stock%7CBonds%7CCash&chs=200x100&cht=p3&wiki=foo.png
+
+
+
+== Bugs/Caveats for Pie Charts ==
+Currently you must provide labels for every segment.
+
+If you don't make the chart wide enough to display the segment labels, they will be cropped.
+
 = Google Chart API specifics =
 
 Options which are specific to the Google Chart API live in the display object of a chart (i.e. `chart.display`)

@@ -364,8 +364,6 @@ http://chart.apis.google.com/chart?chd=s%3ADg9_&chco=0000ff&chs=130x130&cht=bvg&
 
 = Pie Charts = 
 
-TODO: Document pie charts (AddSegment & segements in general, 2d/3d, colors?)
-
 {{{
 from graphy.backends import google_chart_api
 chart = google_chart_api.PieChart([200, 400, 50], ['Stock', 'Bonds', 'Cash'])

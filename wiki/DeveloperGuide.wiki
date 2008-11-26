@@ -2,6 +2,24 @@
 
 _(This document is intended for developers working on the internals of Graphy.  If you just want to use Graphy to make charts, check out the UserGuide.)_
 
+= Process =
+(This is what we've been doing.  We'll change it when needed).
+
+== Development and Reviews ==
+Development happens in trunk.  Code reviews happen post-submit, on the "browse revision" page (e.g. http://code.google.com/p/graphy/source/detail?r=42).  Requested changes will have to go into a new revision.  (pre-submit reviews would be ideal, but we haven't found an easy way to do that yet.  Maybe http://codereview.appspot.com ?)
+
+== Releases ==
+  # Get code reviews for all revisions since the last release
+  # Tag release
+  # make tarball
+  # upload to project page
+(If we ever need to do a bug-fix release, we'll go back and branch at the tag)
+
+== API Stability == 
+Trying our best to not make breaking API changes without first deprecating the API for 1 major release.  From a developer standpoint, this means 2 things:
+  # Deprecate things, don't just remove or break them.
+  # Only remove deprecated things which were deprecated in the previous major release (or earlier).  For example, 2.0 could remove deprecations from 1.2.  But 2.1 shouldn't remove deprecations introduced in 2.0.
+
 = Design Notes =
 == Two Layers ==
 This library consists of two separate layers: the chart objects themselves, and then the backend modules that know how to display the chart objects. (Currently, there's only a single backend, for the Google Chart API, but one of the developers has a prototype for a matplotlib backend). Chart objects provide representations of charts which are (hopefully) easy to work with. They don't have any knowledge of how they will be displayed, so they are fairly generic. The backends hold all the logic for converting a chart object into something that can be displayed, like a Google Chart URL or a PNG image file. The idea is that the user could populate a chart object, then hand it to two different backends and get similar (not identical) results.

@@ -9,7 +9,7 @@ _(This document is intended for developers working on the internals of Graphy.  
 Development happens in trunk.  Code reviews happen post-submit, on the "browse revision" page (e.g. http://code.google.com/p/graphy/source/detail?r=42).  Requested changes will have to go into a new revision.  (pre-submit reviews would be ideal, but we haven't found an easy way to do that yet.  Maybe http://codereview.appspot.com ?)
 
 == Releases ==
-  # Get code reviews for all revisions since the last release
+  # Get code reviews for all revisions since the last release (check the revision used for the last release tag, then check the [http://code.google.com/p/graphy/source/list?path=/trunk/ list of changes on /trunk])
   # Tag release
   # make tarball
   # upload to project page

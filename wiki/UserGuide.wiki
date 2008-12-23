@@ -417,8 +417,13 @@ http://chart.apis.google.com/chart?chd=s%3ADMoqiwaiqr624&chf=c%2Clg%2C90%2Cfffff
 
 = Deprecations =
 
-These APIs are deprecated and will be removed soon:
+We've been making a lot of changes to clean up the API before a 1.0 release.
+
+These APIs are deprecated in 1.0, and will be removed in version 2.0:
   * `AddSeries` is deprecated in favor of chart-specific calls: `LineChart.AddLine`, `BarChart.AddBars`, `PieChart.AddSegments`.
+  * `BarChart.display.style` has moved to `BarChart.style`
+  * `BarStyle` has been renamed to `BarChartStyle`
+  * The argument order of `LineChart.AddLine`, `BarChart.AddBars`, `PieChart.AddSegments`, and `DataSeries.__init__` have all been synchronized.  *This may break existing code*  (we know this sucks, but it is hard to change argument order in a backwards-compatible way, and we wanted to fix this immediately, before a 1.0 release, rather than leave inconsistent order forever).
 
 
 = Developer's Guide =

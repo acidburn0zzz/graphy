@@ -41,8 +41,8 @@ _Note: The Google Chart API assumes data is equally-spaced Y-values.  That is, t
 
 When you construct a new chart, you can provide a single series of data in the constructor.  Charts also have methods to add more data series.  For example, LineChart.AddLine or BarChart.AddBar.  Generally, these methods take the same standard arguments, plus a few arguments specific to the type of chart:
   * point, the list of numbers representing the data.
-  * color, encoded as a hex string (like `'00ff00'`).  If you don't provide colors, they'll be picked automatically (by AutoColor, see the section on [UserGuide#Formatters Formatters])
   * label, a string with the series' label for the legend.  If at least one series has a label, then the legend will be shown automatically.
+  * color, encoded as a hex string (like `'00ff00'`).  If you don't provide colors, they'll be picked automatically (by AutoColor, see the section on [UserGuide#Formatters Formatters])
 
 If you have gaps in your data, they are represented with None.  For example, 
 {{{
@@ -50,7 +50,7 @@ google_chart_api.LineChart([10, 12, 13, 11, None, 8, 9, 7]).display.Url(100, 50)
 }}}
 http://chart.apis.google.com/chart?chd=s%3Afx6o_MVD&chco=0000ff&chs=100x50&cht=lc&chls=1%2C1%2C0&wiki=foo.png
 
-(Behind the scenes, charts store their data in DataSeries objects, which hold the points in the series, the color of the series, and a label for the legend.  Generally, you won't need to deal with DataSeries objects.)
+(Behind the scenes, charts store their data in DataSeries objects, which hold the points in the series, the label for the legend, and a style object for the color & appearance of the series.  Generally, you won't need to deal with DataSeries objects.)
 
 == Axes ==
 

@@ -9,16 +9,19 @@ _(This document is intended for developers working on the internals of Graphy.  
 Development happens in trunk.  Code reviews happen post-submit, on the "browse revision" page (e.g. http://code.google.com/p/graphy/source/detail?r=42).  Requested changes will have to go into a new revision.  (pre-submit reviews would be ideal, but we haven't found an easy way to do that yet.  Maybe http://codereview.appspot.com ?)
 
 == Releases ==
+  # If this is a major release (1.0, 2.0, etc.) check if there are any deprecations that should be removed.
   # Get code reviews for all revisions since the last release (check the revision used for the last release tag, then check the [http://code.google.com/p/graphy/source/list?path=/trunk/ list of changes on /trunk])
   # Tag release
   # make tarball
   # upload to project page
 (If we ever need to do a bug-fix release, we'll go back and branch at the tag)
+  # update UserGuide to mention new features (include the version they were added in) and remove any deleted features (keep the reference to the deleted feature in the list of deprecations)
 
 == API Stability == 
 Trying our best to not make breaking API changes without first deprecating the API for 1 major release.  From a developer standpoint, this means 2 things:
   # Deprecate things, don't just remove or break them.
   # Only remove deprecated things which were deprecated in the previous major release (or earlier).  For example, 2.0 could remove deprecations from 1.2.  But 2.1 shouldn't remove deprecations introduced in 2.0.
+  # Document deprecations in the UserGuide (include the version where the feature was deprecated, and the expected version where it will be removed).
 
 = Design Notes =
 == Two Layers ==

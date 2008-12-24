@@ -21,7 +21,11 @@ Development happens in trunk.  Code reviews happen post-submit, on the "browse r
 Trying our best to not make breaking API changes without first deprecating the API for 1 major release.  From a developer standpoint, this means 2 things:
   # Deprecate things, don't just remove or break them.
   # Only remove deprecated things which were deprecated in the previous major release (or earlier).  For example, 2.0 could remove deprecations from 1.2.  But 2.1 shouldn't remove deprecations introduced in 2.0.
-  # Document deprecations in the UserGuide (include the version where the feature was deprecated, and the expected version where it will be removed).
+
+Here's the steps for deprecating a feature:
+  # add a call like `warnings.warn('foo is deprecated', DeprecationWarning, stacklevel=2)`
+  # Make sure you have a test to confirm the old usage still works.  We need to keep the old usage working until the next major release.
+  # Document the deprecations in the UserGuide (include the version where the feature was deprecated, and the expected version where it will be removed).
 
 = Design Notes =
 == Two Layers ==

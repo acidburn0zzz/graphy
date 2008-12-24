@@ -126,6 +126,8 @@ print chart.display.Img(100, 50)
 
 http://chart.apis.google.com/chart?chs=100x50&cht=lc&chd=s%3A777434&chls=1%2C1%2C0&chco=0000ff&wiki=foo.png 
 
+Note: in version 0.9, you could add an Axis using `AddAxis` and leave min/max set to None on it.  In this case, min/max used the Google Chart API's defaults of 0 and 100.  Now, however, any additional axes with min/max unset will inherit the min/max from the other axis in their same position.
+
 == Legends ==
 
 If you specify labels when you add data series to the chart, then the chart will have a legend.  For example:
